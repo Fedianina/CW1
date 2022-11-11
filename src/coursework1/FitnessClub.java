@@ -1,11 +1,10 @@
 package coursework1;
 
-import coursework1.abonements.Abonements;
+import coursework1.abonements.Abonement;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Arrays;
-import coursework1.abonements.AbonementsType;
 
 
 public class FitnessClub {
@@ -23,21 +22,21 @@ public class FitnessClub {
     //если в зоне нет свободных мест.
     boolean openClose = true;
 
-    Abonements[] swimmingPool = new Abonements[20];
-    Abonements[] fitnessRoom = new Abonements[20];
-    Abonements[] groupClasses = new Abonements[20];
+   private Abonement[] swimmingPool = new Abonement[20];
+    private Abonement[] fitnessRoom = new Abonement[20];
+    private Abonement[] groupClasses = new Abonement[20];
     //String [] purposeOfTheVisit = new String []{"swimming", "fitness", "group"};
 
 
-    private Abonements[] getSwimmingPool() {
+    private Abonement[] getSwimmingPool() {
         return swimmingPool;
     }
 
-    private Abonements[] getFitnessRoom() {
+    private Abonement[] getFitnessRoom() {
         return fitnessRoom;
     }
 
-    private Abonements[] getGroupClasses() {
+    private Abonement[] getGroupClasses() {
         return groupClasses;
     }
 
@@ -63,10 +62,10 @@ public class FitnessClub {
     }
 
     //проверка на просроченность абонемента
-    private boolean checkDataAbonement(Abonements abonements) {
+    private boolean checkDataAbonement(Abonement abonement) {
         System.out.println("Добрый день, позвольте проверить срок действия Вашего абонемента");
         if (isOpenClose()) {
-            if (abonements.getEndRegistrationDate().isAfter(LocalDate.now())) {
+            if (abonement.getEndRegistrationDate().isAfter(LocalDate.now())) {
                 System.out.println("Срок дейстия Вашего абонемента в порядке");
                 return true;
             }
@@ -78,50 +77,56 @@ public class FitnessClub {
 
     // проверка на соответствие времени посещения
 
-    private boolean checkTime(Abonements abonements) {
-        if (checkDataAbonement(abonements)) {
-            if (LocalTime.now().isBefore(abonements.getAbonementsType().getTimeOf())) {
+    private boolean checkTime(Abonement abonement) {
+        if (checkDataAbonement(abonement)) {
+            if (LocalTime.now().isBefore(abonement.getAbonementsType().getTimeOf())) {
                 System.out.println("Вы пришли вовремя!");
                 return true;
             }
-            System.out.println("Время Вашего прихода не соответствует времени посещения. Время посещения по Вашему абонементу органичено " + abonements.getAbonementsType().getTimeOf());
+            System.out.println("Время Вашего прихода не соответствует времени посещения. Время посещения по Вашему абонементу органичено " + abonement.getAbonementsType().getTimeOf());
         }
         return false;
     }
 
-    private boolean checkAbonementType(Abonements abonements) {
-        if (checkTime(abonements)) {
+    private boolean checkAbonementType(Abonement abonement, String purpose) {
+        if (checkTime(abonement)) {
             System.out.println("Проверяю тип Вашего абонемента");
-            String type = abonements.getAbonementsType().name();
-            System.out.println("Тип Вашего абонемента - " + type + " Какой из залов Вы хотели бы посетить?");
-            int room = (int) (1 + Math.random() * 3);
-            switch (room) {
-                case 1 -> {
+            String type = abonement.getAbonementsType().name();
+            System.out.println("Тип Вашего абонемента - " + type + " Для посещения вы выбрали " + purpose);
+
+            switch (purpose) {
+                case "swimmingPool" -> {
                     System.out.println("Бассейн? прекрасный выбор!");
-                    abonements.setDesiredPlaceOfVisit("swimmingPool");
-                    if (abonements.getAbonementsType().isSwimmingPool()) {
-                        System.out.println("У Вас есть возможность посетить бассейн");
-                        return true;
+                    for (String zone : abonement.getAbonementsType().getZones()) {
+                        if (zone.equalsIgnoreCase(purpose)) {
+                            System.out.println("Все в порядке, можете проходить");
+                            return true;
+                        }
+
                     }
                     System.out.println("К сожалению у Вас нет возможности посещать бассейн");
                     return false;
                 }
-                case 2 -> {
-                    System.out.println("Тренажеры? прекрасный выбор!");
-                    abonements.setDesiredPlaceOfVisit("fitnessRoom");
-                    if (abonements.getAbonementsType().isFitnessRoom()) {
-                        System.out.println("У Вас есть возможность посетить тренажеры");
-                        return true;
+                case "fitnessRoom" -> {
+                    System.out.println("Тренажерный зал? Прекрасный выбор!");
+                    for (String zone : abonement.getAbonementsType().getZones()) {
+                        if (zone.equalsIgnoreCase(purpose)) {
+                            System.out.println("Все в порядке, можете проходить");
+                            return true;
+                        }
+
                     }
-                    System.out.println("К сожалению у Вас нет возможности посещать тренажеры");
+                    System.out.println("К сожалению у Вас нет возможности посещать тренажерный зал");
                     return false;
                 }
-                case 3 -> {
-                    System.out.println("Групповые занятия? прекрасный выбор!");
-                    abonements.setDesiredPlaceOfVisit("groupClasses");
-                    if (abonements.getAbonementsType().isGroupClasses()) {
-                        System.out.println("У Вас есть возможность посетить групповые занятия");
-                        return true;
+                case "groupClasses" -> {
+                    System.out.println("Групповые занятия? Прекрасный выбор!");
+                    for (String zone : abonement.getAbonementsType().getZones()) {
+                        if (zone.equalsIgnoreCase(purpose)) {
+                            System.out.println("Все в порядке, можете проходить");
+                            return true;
+                        }
+
                     }
                     System.out.println("К сожалению у Вас нет возможности посещать групповые занятия");
                     return false;
@@ -132,55 +137,58 @@ public class FitnessClub {
     }
 
     //проверка свободной ячейке в массиве
-    public void addToTheList(Abonements abonements) {
-        if (checkAbonementType(abonements)) {
-            if (abonements.getDesiredPlaceOfVisit().equalsIgnoreCase("swimmingPool")) {
-                if (swimmingPool[swimmingPool.length - 1] == null) {
-                    for (int i = 0; i < swimmingPool.length; i++) {
-                        if (swimmingPool[i] == null) {
-                            swimmingPool[i] = abonements;
-                            System.out.println("Можете проходить в бассейн");
-                            return;
-                        }
-                    }
-                }
+
+    public void hello (Abonement abonement, String purpose) {
+        if (checkAbonementType(abonement, purpose)) {
+          addToTheList(abonement, purpose);
             }
         }
-        if (abonements.getDesiredPlaceOfVisit().equalsIgnoreCase("fitnessRoom")) {
-            if (fitnessRoom[fitnessRoom.length - 1] == null) {
+    private void addToTheList(Abonement abonement, String purpose) {
+        switch (purpose) {
+            case "swimmingPool" -> {
+                for (int i = 0; i < swimmingPool.length; i++) {
+                    if (swimmingPool[i] == null) {
+                        swimmingPool[i] = abonement;
+                        return;
+                    }
+                }
+                System.out.println("К сожалению свободных мест нет");
+            }
+            case "fitnessRoom" -> {
                 for (int i = 0; i < fitnessRoom.length; i++) {
                     if (fitnessRoom[i] == null) {
-                        fitnessRoom[i] = abonements;
-                        System.out.println("Можете проходить в тренажерный зал");
+                        fitnessRoom[i] = abonement;
                         return;
                     }
                 }
+                System.out.println("К сожалению свободных мест нет");
             }
-        }
-
-        if (abonements.getDesiredPlaceOfVisit().equalsIgnoreCase("groupClasses")) {
-            if (groupClasses[groupClasses.length - 1] == null) {
+            case "groupClasses" -> {
                 for (int i = 0; i < groupClasses.length; i++) {
                     if (groupClasses[i] == null) {
-                        groupClasses[i] = abonements;
-                        System.out.println("Можете проходить на групповые занятия");
+                        groupClasses[i] = abonement;
                         return;
                     }
                 }
+                System.out.println("К сожалению свободных мест нет");
             }
         }
     }
+
+
+
+
     private void endDay (){
         openClose = false;
-        for (Abonements abonements : swimmingPool) {
-            abonements = null;
+        for (Abonement abonement : swimmingPool) {
+            abonement = null;
         }
-        for (Abonements abonements : fitnessRoom) {
-            abonements = null;
+        for (Abonement abonement : fitnessRoom) {
+            abonement = null;
 
         }
-        for (Abonements abonements : groupClasses ) {
-            abonements = null;
+        for (Abonement abonement : groupClasses ) {
+            abonement = null;
         }
     }
 
